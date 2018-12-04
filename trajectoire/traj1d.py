@@ -43,12 +43,16 @@ def P(t):
 		return 0
 
 
+def rho(z, dz):
+	return sign(dz)*rho0*exp(-z/hs)*S*Cx*dz**2/2
+
+
 def F(Y, t):
 	z, dz = Y
 	if z < 0:
 		ddz = -dz*(n-1)/tmax
 	else:
-		ddz = (P(t)+D*dz-sign(dz)*rho0*exp(-z/hs)*S*Cx*dz**2/2)/m(t)-g
+		ddz = (P(t)+D*dz-rho(z, dz))/m(t)-g
 	return array([dz, ddz])
 
 

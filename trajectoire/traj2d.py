@@ -24,9 +24,7 @@ rayon = 0.08
 S = pi*rayon**2
 z0 = 0
 dz0 = 0
-x0 = 0
-dx0 = 0
-theta = 80*pi/180
+
 
 def m(t):
 	if t < tempsComb:
@@ -45,12 +43,16 @@ def P(t):
 		return 0
 
 
+def rho(z, dz):
+	return sign(dz)*rho0*exp(-z/hs)*S*Cx*dz**2/2
+
+
 def F(Y, t):
 	z, dz = Y
 	if z < 0:
 		ddz = -dz*(n-1)/tmax
 	else:
-		ddz = (P(t)+D*dz-sign(dz)*rho0*exp(-z/hs)*S*Cx*dz**2/2)/m(t)-g
+		ddz = (P(t)+D*dz-rho(z, dz))/m(t)-g
 	return array([dz, ddz])
 
 
