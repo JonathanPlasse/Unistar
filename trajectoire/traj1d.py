@@ -46,8 +46,10 @@ def P(t):
 def F(Y, t):
 	z, dz = Y
 	if z < 0:
-		return array([dz, -dz*(n-1)/tmax])
-	return array([dz, (P(t)+D*dz-sign(dz)*rho0*exp(-z/hs)*S*Cx*dz**2/2)/m(t)-g])
+		ddz = -dz*(n-1)/tmax
+	else:
+		ddz = (P(t)+D*dz-sign(dz)*rho0*exp(-z/hs)*S*Cx*dz**2/2)/m(t)-g
+	return array([dz, ddz])
 
 
 t = linspace(0, tmax, n)
