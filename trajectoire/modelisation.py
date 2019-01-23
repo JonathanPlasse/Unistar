@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # import matplotlib.pyplot as plt
-# from math import pi, exp
 from numpy import array, sin, cos, pi  # , linspace, sign
 # from scipy.integrate import odeint
 
