@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # import matplotlib.pyplot as plt
-from numpy import array, sin, cos, pi  # , linspace, sign
+from numpy import array, sin, cos, pi, dot  # , linspace, sign
 # from scipy.integrate import odeint
 
 x0, y0, z0, u0, v0, w0, phi0, theta0, psi0, p0, q0, r0 = 0
@@ -51,3 +51,11 @@ def F(Vect, U):
     dr = 1/C*(Na+Nf+(A-B)*p*q)
 
     return array([u, v, w, du, dv, dw, p, q, r, dp, dq, dr])
+
+def RtoR0(Vect):
+    cphi, ctheta, cpsi = cos(Vect[6:9])
+    sphi, stheta, spsi = sin(Vect[6:9])
+    T = array([[cpsi*ctheta, -spsi*cphi+cpsi*stheta*sphi, spsi*sphi+cpsi*stheta*cphi],
+           [spsi*ctheta, cpsi*cphi+spsi*stheta*sphi, -cpsi*sphi+spsi*stheta*cphi],
+           [-stheta, ctheta*sphi, ctheta*cphi]])
+    return dot(T, Vect[3:6])
