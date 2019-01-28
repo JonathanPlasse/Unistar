@@ -3,11 +3,12 @@
 
 # import matplotlib.pyplot as plt
 from numpy import array, sin, cos, pi, dot  # , linspace, sign
+import sys
 # from scipy.integrate import odeint
 
-x0, y0, z0, u0, v0, w0, phi0, theta0, psi0, p0, q0, r0 = 0
-Xf0, Yf0, Zf0, Lf0, Mf0, Nf0, Vvent0, epsilon0 = 0
-m, g, Cx, Cy, Cz, lx, ly, lz, rho = 0
+x0, y0, z0, u0, v0, w0, phi0, theta0, psi0, p0, q0, r0 = [0]*12
+Xf0, Yf0, Zf0, Lf0, Mf0, Nf0, Vvent0, epsilon0 = [0]*8
+m, g, Cx, Cy, Cz, lx, ly, lz, rho = [0]*9
 LongueurTube = 0
 D = 0
 Dogive = 0
@@ -59,3 +60,6 @@ def RtoR0(Vect):
            [spsi*ctheta, cpsi*cphi+spsi*stheta*sphi, -cpsi*sphi+spsi*stheta*cphi],
            [-stheta, ctheta*sphi, ctheta*cphi]])
     return dot(T, Vect[3:6])
+
+if __name__ == "__main__":
+    print(RtoR0(array([x0, y0, z0, *map(float, sys.argv[1:7]), p0, q0, r0])))
