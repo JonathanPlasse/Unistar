@@ -6,9 +6,13 @@ from numpy import array, sin, cos, pi, dot  # , linspace, sign
 import sys
 # from scipy.integrate import odeint
 
-x0, y0, z0, u0, v0, w0, phi0, theta0, psi0, p0, q0, r0 = [0]*12
+u0, v0, w0, phi0, theta0, psi0, p0, q0, r0 = [0]*9
 Xf0, Yf0, Zf0, Lf0, Mf0, Nf0, Vvent0, epsilon0 = [0]*8
-m, g, Cx, Cy, Cz, lx, ly, lz, rho = [0]*9
+m, g, Cx, Cy, Cz, rho = [0]*9
+Xcpa = 0
+lx = 0
+ly = Xcpa
+lz = Xcpa
 LongueurTube = 0
 D = 0
 Dogive = 0
@@ -22,12 +26,12 @@ Strainee = pi*D**2/4+4*L*EPaileron
 Sreference = pi*Dogive**2/4
 
 # Vect et U sont des vecteurs dans le repère R de la fusée
-Vect0 = array([x0, y0, z0, u0, v0, w0, phi0, theta0, psi0, p0, q0, r0])
+Vect0 = array([u0, v0, w0, phi0, theta0, psi0, p0, q0, r0])
 U0 = array([Xf0, Yf0, Zf0, Lf0, Mf0, Nf0, Vvent0, epsilon0])
 
 
 def F(Vect, U):
-    x, y, z, u, v, w, phi, theta, psi, p, q, r = Vect
+    u, v, w, phi, theta, psi, p, q, r = Vect
     Xf, Yf, Zf, Lf, Mf, Nf, Vvent, epsilon = U
 
     Vvent_x = Vvent*cos(epsilon)*cos(psi)*cos(theta)-Vvent*sin(epsilon)*sin(psi)
@@ -51,15 +55,15 @@ def F(Vect, U):
     dq = 1/B*(Ma+Mf+(C-A)*p*r)
     dr = 1/C*(Na+Nf+(A-B)*p*q)
 
-    return array([u, v, w, du, dv, dw, p, q, r, dp, dq, dr])
+    return array([du, dv, dw, p, q, r, dp, dq, dr])
 
 def RtoR0(Vect):
-    cphi, ctheta, cpsi = cos(Vect[6:9])
-    sphi, stheta, spsi = sin(Vect[6:9])
+    cphi, ctheta, cpsi = cos(Vect[3:6])
+    sphi, stheta, spsi = sin(Vect[3:6])
     T = array([[cpsi*ctheta, -spsi*cphi+cpsi*stheta*sphi, spsi*sphi+cpsi*stheta*cphi],
            [spsi*ctheta, cpsi*cphi+spsi*stheta*sphi, -cpsi*sphi+spsi*stheta*cphi],
            [-stheta, ctheta*sphi, ctheta*cphi]])
     return dot(T, Vect[3:6])
 
 if __name__ == "__main__":
-    print(RtoR0(array([x0, y0, z0, *map(float, sys.argv[1:7]), p0, q0, r0])))
+    print(RtoR0(array([*map(float, sys.argv[1:7]), p0, q0, r0])))
