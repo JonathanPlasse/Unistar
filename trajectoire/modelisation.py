@@ -1,23 +1,37 @@
 #!/usr/bin/env
 # -*- coding: utf-8 -*-
 
+###########
+# À faire #
+###########
+# Rentrer table de poussé de la fusée
+# Calcul de Xf, Yf, Zf, Lf, Mf, Nf en fonction du temps
+# Calcul de la masse en fonction du temps
+# Calcul du centre de gravité en fonction du temps
+#
+
 # import matplotlib.pyplot as plt
-from numpy import array, sin, cos, pi, dot  # , linspace, sign
+from numpy import array, sin, cos, pi, dot, atan  # , linspace, sign
 import sys
 # from scipy.integrate import odeint
 
 u0, v0, w0, phi0, theta0, psi0, p0, q0, r0 = [0]*9
 Xf0, Yf0, Zf0, Lf0, Mf0, Nf0, Vvent0, epsilon0 = [0]*8
-m, g, Cx, Cy, Cz, rho = [0]*9
-Xcpa = 0
-lx = 0
-ly = Xcpa
-lz = Xcpa
+m = 1.5
+g = 9.81
+rho0 = 1015
+Cx = 0
+Cyb = 0 # Cy_beta
+Cza = 0 # Cz_alpha
 LongueurTube = 0
-D = 0
-Dogive = 0
-L = 0
-EPaileron = 0
+D = 0 # Diamètre de la fusée
+Dogive = D # Diamètre de l'ogive
+L = 0 # Envergure des ailerons
+EPaileron = 0 # Épaisseur des ailerons
+MS = 0 # Marge de stabilité
+lx = 0
+ly = MS*D
+lz = MS*D
 
 A = m*D*D**2/2
 B = m*LongueurTube**2/12
@@ -41,12 +55,15 @@ def F(Vect, U):
     Vry = -v+Vvent_y
     Vrz = -w+Vvent_z
 
+    alpha = -atan(w/u)
+    beta = atan(v/u*cos(atan(w/u)))
+    rho = rho0*(20000-z)/(20000+z)
     Xa = -rho*Strainee*Vrx**2*Cx/2
-    Ya = rho*Strainee*Vry**2*Cy/2
-    Za = -rho*Strainee*Vrz**2*Cz/2
+    Ya = rho*Sreference*Vry**2*Cyb*beta/2
+    Za = -rho*Sreference*Vrz**2*Cza*alpha/2
     La = rho*Strainee*Vrx**2*Cx*lx/2
-    Ma = rho*Strainee*Vrz**2*Cz*lz/2
-    Na = rho*Strainee*Vry**2*Cy*ly/2
+    Ma = rho*Sreference*Vrz**2*Cza*alpha*lz/2
+    Na = rho*Sreference*Vry**2*Cyb*beta*ly/2
 
     du = 1/m*(Xa+Xf-m*g*sin(theta)+r*v-q*w)
     dv = 1/m*(Ya+Yf+m*g*cos(theta)*sin(phi)+p*w-r*u)
