@@ -13,8 +13,8 @@ from math import sqrt
 # - hauteur (en mm)
 f = pandas.read_csv('masses.csv')
 
-CDM = 0  # hauteur du centre de gravité (en m)
-mTotal = 0  # masse total de la fusée (en kg)
+CDM = 0  # hauteur du centre de gravité (en mm)
+mTotal = 0  # masse total de la fusée (en g)
 
 # calcul du centre de gravité
 for i in range(len(f)):
@@ -22,12 +22,15 @@ for i in range(len(f)):
     mTotal += f["masse"][i]
 CDM /= mTotal
 
+CDMvide = 505
+CDMplein = 539
+
 # valeurs connues de la fusee
 Xmasse = 500
 L = 150
 dref = 80
 dail = 80
-m = 150
+m = 120
 n = 100
 e = 120
 p = 120

@@ -4,51 +4,62 @@
 ###########
 # À faire #
 ###########
-# Rentrer table de poussé de la fusée
-# Calcul de Xf, Yf, Zf, Lf, Mf, Nf en fonction du temps
-# Calcul de la masse en fonction du temps
-# Calcul du centre de gravité en fonction du temps
-#
+
+# Approximations
+# - Diminution de la masse linéaire
+# - Poussé du moteur constante
+# - Marge statique constante
+# - La matrice d'inertie de la fusée est un cylindre plein avec une masse uniformément répartie
+# - Densité de l'air constante
+
+# FUTUR
+# - Réalisation de table
+#   - Poussé
+#   - Masse
+#   - Marge statique
+# - Intégration des calculs des constantes
+#   - CzAlpha, CyBeta
+#   - Centre de gravité
+#   - Marge statique
 
 # import matplotlib.pyplot as plt
 from numpy import array, sin, cos, pi, dot, atan
 import sys
 # from scipy.integrate import odeint
 
-u0, v0, w0, phi0, theta0, psi0, p0, q0, r0 = [0]*9
-
 g = 9.81
-rho0 = 1015
-Cx = 0
-Cyb = 0 # Cy_beta
-Cza = 0 # Cz_alpha
-LongueurTube = 0
-D = 0 # Diamètre de la fusée
-Dogive = D # Diamètre de l'ogive
-L = 0 # Envergure des ailerons
-EPaileron = 0 # Épaisseur des ailerons
-lx = 0
-ly = MS*D
-lz = MS*D
-
-Xf = lambda t:146.7 if t<0.97 else 0
-Yf, Zf, Lf, Mf, Nf, Vvent, epsilon = [0]*7
-m = lambda t:1.5-t*0.0869 if t<0.97 else 1.5-0.0843
-MS = 0 # Marge de stabilité
-
-A = m*D*D**2/2
-B = m*LongueurTube**2/12
-C = m*LongueurTube**2/12
+rho = 1015
+Cx = 0.3
+Cyb = 18.15  # Cy_beta
+Cza = 18.15  # Cz_alpha
+LongueurTube = 0.75
+D = 0.08  # Diamètre de la fusée
+Dogive = D  # Diamètre de l'ogive
+L = 0.06634  # Envergure des ailerons
+EPaileron = 0.002  # Épaisseur des ailerons
 Strainee = pi*D**2/4+4*L*EPaileron
 Sreference = pi*Dogive**2/4
 
-# Vect et U sont des vecteurs dans le repère R de la fusée
-Vect0 = array([u0, v0, w0, phi0, theta0, psi0, p0, q0, r0])
-U0 = array([Xf0, Yf0, Zf0, Lf0, Mf0, Nf0, Vvent0, epsilon0])
+
+MS = 0  # Marge de stabilité
+Yf, Zf, Lf, Mf, Nf, Vvent, epsilon = [0]*7
+
+def Xf(t):
+    return 146.7 if t < 0.97 else 0
+
+def m(t):
+    return 1.5-t*0.0869 if t < 0.97 else 1.5-0.0843
 
 
 def F(Vect, t):
     u, v, w, phi, theta, psi, p, q, r = Vect
+
+    A = m(t)*D*D**2/2
+    B = m(t)*LongueurTube**2/12
+    C = m(t)*LongueurTube**2/12
+    lx = 0
+    ly = MS*D
+    lz = MS*D
 
     Vvent_x = Vvent*cos(epsilon)*cos(psi)*cos(theta)-Vvent*sin(epsilon)*sin(psi)
     Vvent_y = Vvent*cos(epsilon)*(sin(psi)*cos(phi)+sin(phi)*sin(theta))+Vvent*sin(epsilon)*cos(psi)*cos(phi)
@@ -59,7 +70,6 @@ def F(Vect, t):
 
     alpha = -atan(w/u)
     beta = atan(v/u*cos(atan(w/u)))
-    rho = rho0*(20000-z)/(20000+z)
     Xa = -rho*Strainee*Vrx**2*Cx/2
     Ya = rho*Sreference*Vry**2*Cyb*beta/2
     Za = -rho*Sreference*Vrz**2*Cza*alpha/2
@@ -80,9 +90,10 @@ def RtoR0(Vect):
     cphi, ctheta, cpsi = cos(Vect[3:6])
     sphi, stheta, spsi = sin(Vect[3:6])
     T = array([[cpsi*ctheta, -spsi*cphi+cpsi*stheta*sphi, spsi*sphi+cpsi*stheta*cphi],
-           [spsi*ctheta, cpsi*cphi+spsi*stheta*sphi, -cpsi*sphi+spsi*stheta*cphi],
-           [-stheta, ctheta*sphi, ctheta*cphi]])
+               [spsi*ctheta, cpsi*cphi+spsi*stheta*sphi, -cpsi*sphi+spsi*stheta*cphi],
+               [-stheta, ctheta*sphi, ctheta*cphi]])
     return dot(T, Vect[3:6])
 
+
 if __name__ == "__main__":
-    print(RtoR0(array([*map(float, sys.argv[1:7]), p0, q0, r0])))
+    print(RtoR0(array([*map(float, sys.argv[1:7]), 0, 0, 0])))
