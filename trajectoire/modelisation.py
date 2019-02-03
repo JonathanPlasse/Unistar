@@ -23,8 +23,21 @@
 #   - Marge statique
 
 import matplotlib.pyplot as plt
-from numpy import array, sin, cos, pi, dot, arctan, linspace
+from numpy import array, sin, cos, pi, dot, arctan2, linspace
 from scipy.integrate import odeint
+
+def euler(F, a, b, y0, h):
+    """Solution de y’=F(y,t) sur [a,b], y(a) = y0, pas h"""
+    y = y0
+    t = a
+    les_y = [y0]
+    les_t = [a]
+    while t+h <= b:
+        y = y + h * F(y, t)
+        les_y.append(y)
+        t += h
+        les_t.append(t)
+    return les_t, array(les_y)
 
 g = 9.81
 rho0 = 101325
@@ -44,18 +57,12 @@ MS = 3.08  # Marge de stabilité
 Yf, Zf, Lf, Mf, Nf = [0]*5
 Vvent, epsilon = [0]*2
 
-def Xf(t):
-    return 146.7 if t < 0.97 else 0
-
-def m(t):
-    return 1.5-t*0.0869 if t < 0.97 else 1.5-0.0843
-
 def F(Vect, t):
     x, y, z, u, v, w, phi, theta, psi, p, q, r = Vect
-
-    A = m(t)*D*D**2/2
-    B = m(t)*LongueurTube**2/12
-    C = m(t)*LongueurTube**2/12
+    m = 1.5-t*0.0869 if t < 0.97 else 1.5-0.0843
+    A = m*D*D**2/2
+    B = m*LongueurTube**2/12
+    C = m*LongueurTube**2/12
     lx = 0
     ly = MS*D
     lz = MS*D
@@ -67,8 +74,8 @@ def F(Vect, t):
     Vry = -v+Vvent_y
     Vrz = -w+Vvent_z
 
-    alpha = -arctan(w/u)
-    beta = arctan(v/u*cos(arctan(w/u)))
+    alpha = -arctan2(w, u)
+    beta = arctan2(v*cos(arctan2(w, u)), u)
     rho = rho0*(20000-z)/(20000+z)
     Xa = -rho*Strainee*Vrx**2*Cx/2
     Ya = rho*Sreference*Vry**2*Cyb*beta/2
@@ -77,9 +84,10 @@ def F(Vect, t):
     Ma = rho*Sreference*Vrz**2*Cza*alpha*lz/2
     Na = rho*Sreference*Vry**2*Cyb*beta*ly/2
 
-    du = 1/m*(Xa+Xf(t)-m(t)*g*sin(theta)+r*v-q*w)
-    dv = 1/m*(Ya+Yf+m(t)*g*cos(theta)*sin(phi)+p*w-r*u)
-    dw = 1/m*(Za+Zf+m(t)*g*cos(theta)*cos(phi)+q*u-p*v)
+    Xf = 146.7 if t < 0.97 else 0
+    du = 1/m*(Xa+Xf-m*g*sin(theta)+r*v-q*w)
+    dv = 1/m*(Ya+Yf+m*g*cos(theta)*sin(phi)+p*w-r*u)
+    dw = 1/m*(Za+Zf+m*g*cos(theta)*cos(phi)+q*u-p*v)
     dp = 1/A*(La+Lf+(B-C)*q*r)
     dq = 1/B*(Ma+Mf+(C-A)*p*r)
     dr = 1/C*(Na+Nf+(A-B)*p*q)
@@ -96,5 +104,6 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
-    t = linspace(0, 30, 1000)
+    t = linspace(0, 30, 100)
     res = odeint(F, array([0, 0, 0, 0, 1.396, 0, 0, 0, 0, 0, 0, 0]), t)
+    print(res)
