@@ -22,13 +22,12 @@
 #   - Centre de gravité
 #   - Marge statique
 
-# import matplotlib.pyplot as plt
-from numpy import array, sin, cos, pi, dot, atan
-import sys
-# from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+from numpy import array, sin, cos, pi, dot, arctan, linspace
+from scipy.integrate import odeint
 
 g = 9.81
-rho = 1015
+rho0 = 101325
 Cx = 0.3
 Cyb = 18.15  # Cy_beta
 Cza = 18.15  # Cz_alpha
@@ -41,8 +40,9 @@ Strainee = pi*D**2/4+4*L*EPaileron
 Sreference = pi*Dogive**2/4
 
 
-MS = 0  # Marge de stabilité
-Yf, Zf, Lf, Mf, Nf, Vvent, epsilon = [0]*7
+MS = 3.08  # Marge de stabilité
+Yf, Zf, Lf, Mf, Nf = [0]*5
+Vvent, epsilon = [0]*2
 
 def Xf(t):
     return 146.7 if t < 0.97 else 0
@@ -50,9 +50,8 @@ def Xf(t):
 def m(t):
     return 1.5-t*0.0869 if t < 0.97 else 1.5-0.0843
 
-
 def F(Vect, t):
-    u, v, w, phi, theta, psi, p, q, r = Vect
+    x, y, z, u, v, w, phi, theta, psi, p, q, r = Vect
 
     A = m(t)*D*D**2/2
     B = m(t)*LongueurTube**2/12
@@ -68,8 +67,9 @@ def F(Vect, t):
     Vry = -v+Vvent_y
     Vrz = -w+Vvent_z
 
-    alpha = -atan(w/u)
-    beta = atan(v/u*cos(atan(w/u)))
+    alpha = -arctan(w/u)
+    beta = arctan(v/u*cos(arctan(w/u)))
+    rho = rho0*(20000-z)/(20000+z)
     Xa = -rho*Strainee*Vrx**2*Cx/2
     Ya = rho*Sreference*Vry**2*Cyb*beta/2
     Za = -rho*Sreference*Vrz**2*Cza*alpha/2
@@ -84,11 +84,11 @@ def F(Vect, t):
     dq = 1/B*(Ma+Mf+(C-A)*p*r)
     dr = 1/C*(Na+Nf+(A-B)*p*q)
 
-    return array([du, dv, dw, p, q, r, dp, dq, dr])
+    return array([*RtoR0(Vect), du, dv, dw, p, q, r, dp, dq, dr])
 
 def RtoR0(Vect):
-    cphi, ctheta, cpsi = cos(Vect[3:6])
-    sphi, stheta, spsi = sin(Vect[3:6])
+    cphi, ctheta, cpsi = cos(Vect[6:9])
+    sphi, stheta, spsi = sin(Vect[6:9])
     T = array([[cpsi*ctheta, -spsi*cphi+cpsi*stheta*sphi, spsi*sphi+cpsi*stheta*cphi],
                [spsi*ctheta, cpsi*cphi+spsi*stheta*sphi, -cpsi*sphi+spsi*stheta*cphi],
                [-stheta, ctheta*sphi, ctheta*cphi]])
@@ -96,4 +96,5 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
-    print(RtoR0(array([*map(float, sys.argv[1:7]), 0, 0, 0])))
+    t = linspace(0, 30, 1000)
+    res = odeint(F, array([0, 0, 0, 0, 1.396, 0, 0, 0, 0, 0, 0, 0]), t)

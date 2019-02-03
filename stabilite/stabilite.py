@@ -22,8 +22,8 @@ for i in range(len(f)):
     mTotal += f["masse"][i]
 CDM /= mTotal
 
-CDMvide = 505
-CDMplein = 539
+CDM = 505  # cdg vide
+# CDMplein = 539
 
 # valeurs connues de la fusee
 Xmasse = 500
