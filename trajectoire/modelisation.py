@@ -25,6 +25,8 @@
 import matplotlib.pyplot as plt
 from numpy import array, sin, cos, pi, dot, arctan, sqrt, linspace
 from scipy.integrate import odeint
+import matplotlib as mpl
+from mpl_toolkits.mplot3d import Axes3D
 
 def euler(F, a, b, y0, h):
     """Solution de y’=F(y,t) sur [a,b], y(a) = y0, pas h"""
@@ -112,10 +114,23 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
-    t = linspace(0, 15.5, 100)
-    res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
-    plt.plot(t, -res[:, 2])
-    plt.xlabel("x (in meters)")
-    plt.ylabel("t (in seconds)")
-    plt.title("Trajectory")
-    plt.savefig("traj_tz.png")
+    # t = linspace(0, 15.5, 100)
+    # res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
+    # plt.plot(t, -res[:, 2])
+    # plt.xlabel("x (in meters)")
+    # plt.ylabel("t (in seconds)")
+    # plt.title("Trajectory")
+    # plt.savefig("traj_tz.png")
+    mpl.rcParams['legend.fontsize'] = 10
+
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    theta = np.linspace(-4 * np.pi, 4 * np.pi, 100)
+    z = np.linspace(-2, 2, 100)
+    r = z**2 + 1
+    x = r * np.sin(theta)
+    y = r * np.cos(theta)
+    ax.plot(x, y, z, label='parametric curve')
+    ax.legend()
+
+    plt.show()
