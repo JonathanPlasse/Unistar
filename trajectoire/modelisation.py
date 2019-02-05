@@ -61,7 +61,7 @@ Vvent, epsilon = [0]*2
 
 def F(Vect, t):
     x, y, z, u, v, w, phi, theta, psi, p, q, r = Vect
-    m = 1.5-t*0.0869 if t < 0.97 else 1.5-0.0843
+    m = 1.8-t*0.0869 if t < 0.97 else 1.5-0.0843
     A = m*D*D**2/2
     B = m*LongueurTube**2/12
     C = m*LongueurTube**2/12
@@ -81,7 +81,7 @@ def F(Vect, t):
     Xa = 0
     Xf = 146.7 if t < 0.97 else 0
 
-    du = 1/m*(Xa+Xf-m*g*sin(theta)+r*v-q*w)
+    du = 1/m*(Xa+Xf+m*g*sin(theta)+r*v-q*w)
     if (sqrt(x**2+y**2+z**2) < LongueurRampe):
         dv, dw, dp, dq, dr = [0]*5
     else:
@@ -112,7 +112,7 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
-    t = linspace(0, 10, 100)
-    res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
-    plt.plot(t, res[:, 3])
+    t = linspace(0, 17, 100)
+    res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, -1.396, 0, 0, 0, 0]), t)
+    plt.plot(t, res[:, 2])
     plt.show()
