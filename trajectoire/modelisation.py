@@ -114,23 +114,28 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
-    # t = linspace(0, 15.5, 100)
-    # res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
-    # plt.plot(t, -res[:, 2])
-    # plt.xlabel("x (in meters)")
-    # plt.ylabel("t (in seconds)")
-    # plt.title("Trajectory")
+    t = linspace(0, 15.5, 100)
+    res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
+    # plt.plot(t, -res[:, 2], label="Trajectory")
+    # plt.title("Altitude as a function of time")
+    # plt.xlabel("t (in seconds)")
+    # plt.ylabel("z (in meters)")
+    # plt.legend()
     # plt.savefig("traj_tz.png")
     mpl.rcParams['legend.fontsize'] = 10
 
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    theta = np.linspace(-4 * np.pi, 4 * np.pi, 100)
-    z = np.linspace(-2, 2, 100)
+    theta = linspace(-4 * pi, 4 * pi, 100)
+    z = linspace(-2, 2, 100)
     r = z**2 + 1
-    x = r * np.sin(theta)
-    y = r * np.cos(theta)
-    ax.plot(x, y, z, label='parametric curve')
+    x = r * sin(theta)
+    y = r * cos(theta)
+    ax.plot(res[:, 0], res[:, 1], -res[:, 2], label='Trajectory')
+    ax.set_xlabel("x (in meters)")
+    ax.set_ylabel("y (in meters)")
+    ax.set_zlabel(r"z (in meters)")
     ax.legend()
+    plt.title("Rocket Trajectory")
 
-    plt.show()
+    plt.savefig("traj_3d.png")
