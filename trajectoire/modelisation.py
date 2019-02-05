@@ -110,7 +110,8 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
-    t = linspace(0, 5, 100)
-    res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, -1.396, 0, 0, 0, 0]), t)
-    plt.plot(t, res[:, 3])
-    plt.show()
+    # t = linspace(0, 5, 100)
+    # res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, -1.396, 0, 0, 0, 0]), t)
+    # plt.plot(t, res[:, 3])
+    # plt.show()
+    print(RtoR0(array([0, 0, 0, 1, 0, 0, 0, -1.396, 0, 0, 0, 0])))
