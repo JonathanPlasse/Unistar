@@ -81,7 +81,7 @@ def F(Vect, t):
     Xa = 0
     Xf = 146.7 if t < 0.97 else 0
 
-    du = 1/m*(Xa+Xf+m*g*sin(theta)+r*v-q*w)
+    du = 1/m*(Xa+Xf-m*g*sin(theta)+r*v-q*w)
     if (sqrt(x**2+y**2+z**2) < LongueurRampe):
         dv, dw, dp, dq, dr = [0]*5
     else:
@@ -112,7 +112,10 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
-    t = linspace(0, 17, 100)
-    res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, -1.396, 0, 0, 0, 0]), t)
-    plt.plot(t, res[:, 2])
-    plt.show()
+    t = linspace(0, 15.5, 100)
+    res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
+    plt.plot(t, -res[:, 2])
+    plt.xlabel("x (in meters)")
+    plt.ylabel("t (in seconds)")
+    plt.title("Trajectory")
+    plt.savefig("traj_tz.png")
