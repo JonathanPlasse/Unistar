@@ -22,9 +22,9 @@
 #   - Centre de gravité
 #   - Marge statique
 
-# import matplotlib.pyplot as plt
-from numpy import array, sin, cos, pi, dot, arctan2, sqrt  # , linspace
-# from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+from numpy import array, sin, cos, pi, dot, arctan, sqrt, linspace
+from scipy.integrate import odeint
 
 def euler(F, a, b, y0, h):
     """Solution de y’=F(y,t) sur [a,b], y(a) = y0, pas h"""
@@ -34,8 +34,8 @@ def euler(F, a, b, y0, h):
     les_t = [a]
     while t+h <= b:
         y = y + h * F(y, t)
-        print(y)
-        input()
+        # print(y)
+        # input()
         les_y.append(y)
         t += h
         les_t.append(t)
@@ -84,8 +84,8 @@ def F(Vect, t):
     if (sqrt(x**2+y**2+z**2) < LongueurRampe):
         dv, dw, dp, dq, dr = [0]*5
     else:
-        alpha = -arctan2(w, u)
-        beta = arctan2(v*cos(arctan2(w, u)), u)
+        alpha = -arctan(w/u)
+        beta = arctan(v/u*cos(arctan(w/u)))
         Ya = rho*Sreference*Vry**2*Cyb*beta/2
         Za = -rho*Sreference*Vrz**2*Cza*alpha/2
         La = rho*Strainee*Vrx**2*Cx*lx/2
@@ -110,4 +110,7 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
-    t, res = euler(F, 0, 10, array([0, 0, 0, 0, 1.396, 0, 0, 0, 0, 0, 0, 0]), 0.01)
+    t = linspace(0, 5, 100)
+    res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, -1.396, 0, 0, 0, 0]), t)
+    plt.plot(t, res[:, 3])
+    plt.show()
