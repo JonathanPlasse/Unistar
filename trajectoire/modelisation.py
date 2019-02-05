@@ -22,9 +22,9 @@
 #   - Centre de gravité
 #   - Marge statique
 
-import matplotlib.pyplot as plt
-from numpy import array, sin, cos, pi, dot, arctan2, linspace
-from scipy.integrate import odeint
+# import matplotlib.pyplot as plt
+from numpy import array, sin, cos, pi, dot, arctan2, sqrt  # , linspace
+# from scipy.integrate import odeint
 
 def euler(F, a, b, y0, h):
     """Solution de y’=F(y,t) sur [a,b], y(a) = y0, pas h"""
@@ -34,6 +34,8 @@ def euler(F, a, b, y0, h):
     les_t = [a]
     while t+h <= b:
         y = y + h * F(y, t)
+        print(y)
+        input()
         les_y.append(y)
         t += h
         les_t.append(t)
@@ -51,7 +53,7 @@ L = 0.06634  # Envergure des ailerons
 EPaileron = 0.002  # Épaisseur des ailerons
 Strainee = pi*D**2/4+4*L*EPaileron
 Sreference = pi*Dogive**2/4
-
+LongueurRampe = 2
 
 MS = 3.08  # Marge de stabilité
 Yf, Zf, Lf, Mf, Nf = [0]*5
@@ -74,23 +76,27 @@ def F(Vect, t):
     Vry = -v+Vvent_y
     Vrz = -w+Vvent_z
 
-    alpha = -arctan2(w, u)
-    beta = arctan2(v*cos(arctan2(w, u)), u)
     rho = rho0*(20000-z)/(20000+z)
     Xa = -rho*Strainee*Vrx**2*Cx/2
-    Ya = rho*Sreference*Vry**2*Cyb*beta/2
-    Za = -rho*Sreference*Vrz**2*Cza*alpha/2
-    La = rho*Strainee*Vrx**2*Cx*lx/2
-    Ma = rho*Sreference*Vrz**2*Cza*alpha*lz/2
-    Na = rho*Sreference*Vry**2*Cyb*beta*ly/2
-
     Xf = 146.7 if t < 0.97 else 0
+
     du = 1/m*(Xa+Xf-m*g*sin(theta)+r*v-q*w)
-    dv = 1/m*(Ya+Yf+m*g*cos(theta)*sin(phi)+p*w-r*u)
-    dw = 1/m*(Za+Zf+m*g*cos(theta)*cos(phi)+q*u-p*v)
-    dp = 1/A*(La+Lf+(B-C)*q*r)
-    dq = 1/B*(Ma+Mf+(C-A)*p*r)
-    dr = 1/C*(Na+Nf+(A-B)*p*q)
+    if (sqrt(x**2+y**2+z**2) < LongueurRampe):
+        dv, dw, dp, dq, dr = [0]*5
+    else:
+        alpha = -arctan2(w, u)
+        beta = arctan2(v*cos(arctan2(w, u)), u)
+        Ya = rho*Sreference*Vry**2*Cyb*beta/2
+        Za = -rho*Sreference*Vrz**2*Cza*alpha/2
+        La = rho*Strainee*Vrx**2*Cx*lx/2
+        Ma = rho*Sreference*Vrz**2*Cza*alpha*lz/2
+        Na = rho*Sreference*Vry**2*Cyb*beta*ly/2
+
+        dv = 1/m*(Ya+Yf+m*g*cos(theta)*sin(phi)+p*w-r*u)
+        dw = 1/m*(Za+Zf+m*g*cos(theta)*cos(phi)+q*u-p*v)
+        dp = 1/A*(La+Lf+(B-C)*q*r)
+        dq = 1/B*(Ma+Mf+(C-A)*p*r)
+        dr = 1/C*(Na+Nf+(A-B)*p*q)
 
     return array([*RtoR0(Vect), du, dv, dw, p, q, r, dp, dq, dr])
 
@@ -104,6 +110,4 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
-    t = linspace(0, 30, 100)
-    res = odeint(F, array([0, 0, 0, 0, 1.396, 0, 0, 0, 0, 0, 0, 0]), t)
-    print(res)
+    t, res = euler(F, 0, 10, array([0, 0, 0, 0, 1.396, 0, 0, 0, 0, 0, 0, 0]), 0.01)
