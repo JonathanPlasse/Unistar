@@ -77,20 +77,22 @@ def F(Vect, t):
     Vrz = -w+Vvent_z
 
     rho = rho0*(20000-z)/(20000+z)
-    Xa = -rho*Strainee*Vrx**2*Cx/2
+    # Xa = -rho*Strainee*Vrx**2*Cx/2
+    Xa = 0
     Xf = 146.7 if t < 0.97 else 0
 
     du = 1/m*(Xa+Xf-m*g*sin(theta)+r*v-q*w)
     if (sqrt(x**2+y**2+z**2) < LongueurRampe):
         dv, dw, dp, dq, dr = [0]*5
     else:
-        alpha = -arctan(w/u)
-        beta = arctan(v/u*cos(arctan(w/u)))
-        Ya = rho*Sreference*Vry**2*Cyb*beta/2
-        Za = -rho*Sreference*Vrz**2*Cza*alpha/2
-        La = rho*Strainee*Vrx**2*Cx*lx/2
-        Ma = rho*Sreference*Vrz**2*Cza*alpha*lz/2
-        Na = rho*Sreference*Vry**2*Cyb*beta*ly/2
+        # alpha = -arctan(w/u)
+        # beta = arctan(v/u*cos(arctan(w/u)))
+        # Ya = rho*Sreference*Vry**2*Cyb*beta/2
+        # Za = -rho*Sreference*Vrz**2*Cza*alpha/2
+        # La = rho*Strainee*Vrx**2*Cx*lx/2
+        # Ma = rho*Sreference*Vrz**2*Cza*alpha*lz/2
+        # Na = rho*Sreference*Vry**2*Cyb*beta*ly/2
+        Ya, Za, La, Ma, Na = [0]*5
 
         dv = 1/m*(Ya+Yf+m*g*cos(theta)*sin(phi)+p*w-r*u)
         dw = 1/m*(Za+Zf+m*g*cos(theta)*cos(phi)+q*u-p*v)
@@ -110,8 +112,7 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
-    # t = linspace(0, 5, 100)
-    # res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, -1.396, 0, 0, 0, 0]), t)
-    # plt.plot(t, res[:, 3])
-    # plt.show()
-    print(RtoR0(array([0, 0, 0, 1, 0, 0, 0, -1.396, 0, 0, 0, 0])))
+    t = linspace(0, 10, 100)
+    res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
+    plt.plot(t, res[:, 3])
+    plt.show()
