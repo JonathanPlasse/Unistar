@@ -28,23 +28,11 @@ from scipy.integrate import odeint
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 
-def euler(F, a, b, y0, h):
-    """Solution de y’=F(y,t) sur [a,b], y(a) = y0, pas h"""
-    y = y0
-    t = a
-    les_y = [y0]
-    les_t = [a]
-    while t+h <= b:
-        y = y + h * F(y, t)
-        # print(y)
-        # input()
-        les_y.append(y)
-        t += h
-        les_t.append(t)
-    return les_t, array(les_y)
-
+mTotal = 1.8
+mCombustible = 0.0843
+tCombustion = 0.97
 g = 9.81
-rho0 = 101325
+rho0 = 1.013  # La densité de l'air
 Cx = 0.3
 Cyb = 18.15  # Cy_beta
 Cza = 18.15  # Cz_alpha
@@ -53,21 +41,21 @@ D = 0.08  # Diamètre de la fusée
 Dogive = D  # Diamètre de l'ogive
 L = 0.06634  # Envergure des ailerons
 EPaileron = 0.002  # Épaisseur des ailerons
-Strainee = pi*D**2/4+4*L*EPaileron
-Sreference = pi*Dogive**2/4
+Strainee = pi*D**2/4+4*L*EPaileron  # Surface de trainée
+Sreference = pi*Dogive**2/4  # Surface de référence
 LongueurRampe = 2
 
 MS = 3.08  # Marge de stabilité
-Yf, Zf, Lf, Mf, Nf = [0]*5
-Vvent, epsilon = [0]*2
+Yf, Zf, Lf, Mf, Nf = [0]*5  # Force et moment appliqué à la fusée
+Vvent = 10  # Vitesse du vent
+epsilon = 0  # Direction du vent
 
 def F(Vect, t):
     x, y, z, u, v, w, phi, theta, psi, p, q, r = Vect
-    m = 1.8-t*0.0869 if t < 0.97 else 1.5-0.0843
+    m = mTotal-t*mCombustible/tCombustion if t < tCombustion else mTotal-mCombustible
     A = m*D*D**2/2
     B = m*LongueurTube**2/12
     C = m*LongueurTube**2/12
-    lx = 0
     ly = MS*D
     lz = MS*D
 
@@ -78,27 +66,24 @@ def F(Vect, t):
     Vry = -v+Vvent_y
     Vrz = -w+Vvent_z
 
-    rho = rho0*(20000-z)/(20000+z)
-    # Xa = -rho*Strainee*Vrx**2*Cx/2
-    Xa = 0
+    rho = rho0*(20000+z)/(20000-z)
+    Xa = -rho*Strainee*Vrx**2*Cx/2
     Xf = 146.7 if t < 0.97 else 0
 
     du = 1/m*(Xa+Xf-m*g*sin(theta)+r*v-q*w)
     if (sqrt(x**2+y**2+z**2) < LongueurRampe):
         dv, dw, dp, dq, dr = [0]*5
     else:
-        # alpha = -arctan(w/u)
-        # beta = arctan(v/u*cos(arctan(w/u)))
-        # Ya = rho*Sreference*Vry**2*Cyb*beta/2
-        # Za = -rho*Sreference*Vrz**2*Cza*alpha/2
-        # La = rho*Strainee*Vrx**2*Cx*lx/2
-        # Ma = rho*Sreference*Vrz**2*Cza*alpha*lz/2
-        # Na = rho*Sreference*Vry**2*Cyb*beta*ly/2
-        Ya, Za, La, Ma, Na = [0]*5
+        alpha = -arctan(w/u)
+        beta = arctan(v/u*cos(arctan(w/u)))
+        Ya = -rho*Sreference*Vry**2*Cyb*beta/2
+        Za = -rho*Sreference*Vrz**2*Cza*alpha/2
+        Ma = rho*Sreference*Vrz**2*Cza*alpha*lz/2
+        Na = rho*Sreference*Vry**2*Cyb*beta*ly/2
 
         dv = 1/m*(Ya+Yf+m*g*cos(theta)*sin(phi)+p*w-r*u)
         dw = 1/m*(Za+Zf+m*g*cos(theta)*cos(phi)+q*u-p*v)
-        dp = 1/A*(La+Lf+(B-C)*q*r)
+        dp = 1/A*(Lf+(B-C)*q*r)
         dq = 1/B*(Ma+Mf+(C-A)*p*r)
         dr = 1/C*(Na+Nf+(A-B)*p*q)
 
@@ -114,28 +99,24 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
-    t = linspace(0, 15.5, 100)
-    res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
-    # plt.plot(t, -res[:, 2], label="Trajectory")
+    # t = linspace(0, 13, 100)
+    # for epsilon in linspace(0, 2*pi, 10):
+    #     res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
+    #     plt.plot(res[:, 0], -res[:, 2])
     # plt.title("Altitude as a function of time")
     # plt.xlabel("t (in seconds)")
     # plt.ylabel("z (in meters)")
-    # plt.legend()
-    # plt.savefig("traj_tz.png")
-    mpl.rcParams['legend.fontsize'] = 10
+    # plt.show()
 
+    mpl.rcParams['legend.fontsize'] = 10
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    theta = linspace(-4 * pi, 4 * pi, 100)
-    z = linspace(-2, 2, 100)
-    r = z**2 + 1
-    x = r * sin(theta)
-    y = r * cos(theta)
-    ax.plot(res[:, 0], res[:, 1], -res[:, 2], label='Trajectory')
+    t = linspace(0, 13, 100)
+    for epsilon in linspace(0, pi, 10):
+        res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
+        ax.plot(res[:, 0], res[:, 1], -res[:, 2])
     ax.set_xlabel("x (in meters)")
     ax.set_ylabel("y (in meters)")
     ax.set_zlabel(r"z (in meters)")
-    ax.legend()
     plt.title("Rocket Trajectory")
-
-    plt.savefig("traj_3d.png")
+    plt.show()
