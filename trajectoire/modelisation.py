@@ -51,6 +51,7 @@ Vvent = 10  # Vitesse du vent
 epsilon = 0  # Direction du vent
 
 def F(Vect, t):
+    """Fonction de dérivation du vecteur d'état Vect en fonction de t"""
     x, y, z, u, v, w, phi, theta, psi, p, q, r = Vect
     m = mTotal-t*mCombustible/tCombustion if t < tCombustion else mTotal-mCombustible
     A = m*D*D**2/2
@@ -71,7 +72,7 @@ def F(Vect, t):
     Xf = 146.7 if t < 0.97 else 0
 
     du = 1/m*(Xa+Xf-m*g*sin(theta)+r*v-q*w)
-    if (sqrt(x**2+y**2+z**2) < LongueurRampe):
+    if (sqrt(x**2+y**2+z**2) < LongueurRampe):  # Test si la fusée est toujours dans la rampe de lancement
         dv, dw, dp, dq, dr = [0]*5
     else:
         alpha = -arctan(w/u)
@@ -90,6 +91,7 @@ def F(Vect, t):
     return array([*RtoR0(Vect), du, dv, dw, p, q, r, dp, dq, dr])
 
 def RtoR0(Vect):
+    """Renvoie les vitesses de la fusée dans le repère terrestre"""
     cphi, ctheta, cpsi = cos(Vect[6:9])
     sphi, stheta, spsi = sin(Vect[6:9])
     T = array([[cpsi*ctheta, -spsi*cphi+cpsi*stheta*sphi, spsi*sphi+cpsi*stheta*cphi],
@@ -99,8 +101,13 @@ def RtoR0(Vect):
 
 
 if __name__ == "__main__":
+    # Simulation du vol de la fusée avec différentes direction de vent
+
+    ################
+    # Affichage 2D #
+    ################
     # t = linspace(0, 13, 100)
-    # for epsilon in linspace(0, 2*pi, 10):
+    # for epsilon in linspace(0, pi, 10):
     #     res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
     #     plt.plot(res[:, 0], -res[:, 2])
     # plt.title("Altitude as a function of time")
@@ -108,6 +115,9 @@ if __name__ == "__main__":
     # plt.ylabel("z (in meters)")
     # plt.show()
 
+    ################
+    # Affichage 3D #
+    ################
     mpl.rcParams['legend.fontsize'] = 10
     fig = plt.figure()
     ax = fig.gca(projection='3d')
