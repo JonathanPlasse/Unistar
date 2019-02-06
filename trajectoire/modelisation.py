@@ -123,7 +123,7 @@ if __name__ == "__main__":
     ax = fig.gca(projection='3d')
     t = linspace(0, 13, 100)
     for epsilon in linspace(0, pi, 10):
-        res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
+        res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, pi*80/180, 0, 0, 0, 0]), t)
         ax.plot(res[:, 0], res[:, 1], -res[:, 2])
     ax.set_xlabel("x (in meters)")
     ax.set_ylabel("y (in meters)")
