@@ -28,9 +28,25 @@ from scipy.integrate import odeint
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 
+tMax = 15
 mTotal = 1.8
 mCombustible = 0.0843
 tCombustion = 0.97
+
+def P(t):
+    if t < 0:
+        return 0
+    elif t < .04:
+        return 250-50/.04*t
+    elif t < .68:
+        return 200-50/(.68-.4)*(t-.4)
+    elif t < 0.84:
+        return 150-100/(.84-.68)*(t-.68)
+    elif t < 1.04:
+        return 50-50/(1.04-.84)*(t-.84)
+    else:
+        return 0
+
 g = 9.81
 rho0 = 1.013  # La densité de l'air
 Cx = 0.3
@@ -69,10 +85,11 @@ def F(Vect, t):
 
     rho = rho0*(20000+z)/(20000-z)
     Xa = -rho*Strainee*Vrx**2*Cx/2
-    Xf = 146.7 if t < 0.97 else 0
+    # Xf = 146.7 if t < 0.97 else 0
+    Xf = P(t)
 
     du = 1/m*(Xa+Xf-m*g*sin(theta)+r*v-q*w)
-    if (sqrt(x**2+y**2+z**2) < LongueurRampe):  # Test si la fusée est toujours dans la rampe de lancement
+    if sqrt(x**2+y**2+z**2) < LongueurRampe:  # Test si la fusée est toujours dans la rampe de lancement
         dv, dw, dp, dq, dr = [0]*5
     else:
         alpha = -arctan(w/u)
@@ -106,7 +123,7 @@ if __name__ == "__main__":
     ################
     # Affichage 2D #
     ################
-    # t = linspace(0, 13, 100)
+    # t = linspace(0, tMax, 100)
     # for epsilon in linspace(0, pi, 10):
     #     res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, 1.396, 0, 0, 0, 0]), t)
     #     plt.plot(res[:, 0], -res[:, 2])
@@ -121,7 +138,7 @@ if __name__ == "__main__":
     mpl.rcParams['legend.fontsize'] = 10
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    t = linspace(0, 13, 100)
+    t = linspace(0, tMax, 100)
     for epsilon in linspace(0, pi, 10):
         res = odeint(F, array([0, 0, 0, 0, 0, 0, 0, pi*80/180, 0, 0, 0, 0]), t)
         ax.plot(res[:, 0], res[:, 1], -res[:, 2])
