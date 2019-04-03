@@ -1,4 +1,4 @@
-#!/usr/bin/env
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 ###########
@@ -29,21 +29,23 @@ import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import yaml
 
-c = yaml.load('caracteristique.yml')
+
+with open('caracteristique.yml', 'r') as f:
+    c = yaml.load(f.read())
 
 Xcg_sans = c['Xcg_sans']
 Xcg_avec = c['Xcg_avec']
 
 # valeurs connues de la fusee
-l = 150
-dref = 80
-dail = 80
-m = 120
-n = 100
-e = 120
-p = 120
-Q = 4
-Xail = 750
+l = c['l']
+dref = c['D']
+dail = c['D']
+m = c['m']
+n = c['n']
+e = c['e']
+p = c['p']
+Q = c['nb_ailerons']
+Xail = c['Xail']
 taille = 1000
 
 # valeurs qui seront calculees plus tard
