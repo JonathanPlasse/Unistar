@@ -2,8 +2,8 @@
 
 # Diamètre extérieur
 D: 80
-# Distance de la fin de l'ogive à l'extérieur de la fusée au début de l'aileron
-L: 600
+# Distance du haut de la fusée au début de l'aileron
+Xail: 750
 # Distance de la partie extérieur de l'ogive au propulseur
 prop: 521.91
 # Longeur extérieure de l'ogive
@@ -14,5 +14,5 @@ p: 100
 n: 100
 epaisseur_aileron: 2mm
 nb_ailerons: 4
-Xcg_with: 606.669
-Xcg_without: 597.086
+Xcg_avec: 606.669
+Xcg_sans: 597.086
