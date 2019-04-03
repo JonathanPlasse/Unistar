@@ -123,8 +123,8 @@ def P(t):
 g = 9.81
 rho0 = 1.013  # La densité de l'air
 Cx = 0.3
-Cyb = 18.15  # Cy_beta
-Cza = 18.15  # Cz_alpha
+Cyb = Cna  # Cy_beta
+Cza = Cna  # Cz_alpha
 LongueurTube = 0.75
 D = 0.08  # Diamètre de la fusée
 Dogive = D  # Diamètre de l'ogive
@@ -134,7 +134,6 @@ Strainee = np.pi*D**2/4+4*L*EPaileron  # Surface de trainée
 Sreference = np.pi*Dogive**2/4  # Surface de référence
 LongueurRampe = 2
 
-MS = 3.08  # Marge de stabilité
 Yf, Zf, Lf, Mf, Nf = [0]*5  # Force et moment appliqué à la fusée
 Vvent = 10  # Vitesse du vent
 epsilon = 0  # Direction du vent
@@ -150,8 +149,8 @@ def F(Vect, t):
     A = m*D*D**2/2
     B = m*LongueurTube**2/12
     C = m*LongueurTube**2/12
-    ly = MS*D
-    lz = MS*D
+    ly = MS(Xcg_sans)*D
+    lz = MS(Xcg_sans)*D
 
     Vvent_x = Vvent*np.cos(epsilon)*np.cos(psi)*np.cos(theta)\
         - Vvent*np.sin(epsilon)*np.sin(psi)
