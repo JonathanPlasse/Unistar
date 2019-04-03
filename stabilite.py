@@ -1,32 +1,13 @@
 #!/usr/bin/env
 # -*- coding: utf-8 -*-
 
-import pandas
+import yaml
 from math import sqrt
 
-# masse en g
-# hauteur en m
-
-# lecture du fichier masses.csv
-# f est un dictionnaire avec comme clé :
-# - masse (en g)
-# - hauteur (en mm)
-f = pandas.read_csv('masses.csv')
-
-CDM = 0  # hauteur du centre de gravité (en mm)
-mTotal = 0  # masse total de la fusée (en g)
-
-# calcul du centre de gravité
-for i in range(len(f)):
-    CDM += f["masse"][i] * f["hauteur"][i]
-    mTotal += f["masse"][i]
-CDM /= mTotal
-
-CDM = 505  # cdg vide
-# CDMplein = 539
+Xcg_without = 505
+Xcg_with = 539
 
 # valeurs connues de la fusee
-Xmasse = 500
 L = 150
 dref = 80
 dail = 80
@@ -62,7 +43,7 @@ XcpaCoiffe = 7/15*L
 Cna = 2 + CnaAil
 Xcpa = (XcpaCoiffe*CnaCoiffe + XcpaAil*CnaAil)/(CnaCoiffe + CnaAil)
 
-MS = abs(CDM-Xcpa)/dref
+MS = abs(Xcg_without-Xcpa)/dref
 
 MSCna = MS*Cna
 

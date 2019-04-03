@@ -14,5 +14,5 @@ p: 100
 n: 100
 epaisseur_aileron: 2mm
 nb_ailerons: 4
-Xcg_moteur_plein: 606.669
-Xcg_moteur_vide: 597.086
+Xcg_with: 606.669
+Xcg_without: 597.086
