@@ -99,7 +99,7 @@ else:
     print(f"finesse : {finesse} ; Cna : {Cna}")
     print(f"MS : {MS(Xcg_sans)} ; MS.Cna : {MSCna}")
 
-tMax = 15
+tMax = 14
 mTotal = 1.8
 mCombustible = 0.0843
 tCombustion = 0.97
